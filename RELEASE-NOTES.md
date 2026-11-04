@@ -1,20 +1,19 @@
-# SI FORGE STUDIO 1.1.0
+# SI FORGE STUDIO 1.2.0
 
-Import and export editable, password-encrypted projects.
+Move, resize, and rotate components directly in the designer.
 
-- **Project → Export project** saves a `.siforge` file containing pages, styles, code, backend flows, embedded assets, accounts, and database records.
-- **Project → Import project**, or **Import project** on the start screen, opens a project file using its password.
-- Imports create separate local copies. Invalid files, wrong passwords, and canceled dialogs preserve the current project.
-- **Project → Export website** remains available for standalone runnable website folders.
+- Layout mode reorders elements. Free position allows overlap and exact X/Y coordinates.
+- Resize handles, rotation, duplicate, Bring forward / Send backward, and keyboard nudging.
+- Alignment guides and an adjustable grid, each with its own toggle.
+- Hold Alt while dragging to move an element into another container.
+- Desktop arrangements automatically stack on mobile. Mobile has separate overrides and a reset control.
+- Each gesture is one undo step. Escape cancels a gesture.
+- Positions persist in encrypted projects and appear in running and exported websites.
 
-Existing project files remain compatible. This update does not rewrite the text in existing websites.
+Select an element, then choose Layout or Free position in the toolbar. Drag to move; use selection handles to resize or rotate. Properties provides exact values. Shift preserves resize proportions or snaps rotation to 15 degrees. Ctrl temporarily disables snapping.
 
-## Download and run
+Existing projects remain compatible. Project import/export and standalone website export remain available.
 
-Download **SI-FORGE-STUDIO-1.1.0-Windows-x64.zip**, extract the complete folder to a writable location, and open **SI FORGE STUDIO.exe**. Keep all files together. Import a previous build’s `.siforge` files or copy its `projects` folder into the new app folder. Keep your project password safe: there is no password recovery.
+Download **SI-FORGE-STUDIO-1.2.0-Windows-x64.zip**, extract the complete folder to a writable location, and open **SI FORGE STUDIO.exe**. Keep all files together. Import previous .siforge files using their passwords.
 
-The Windows build is unsigned. V1 serves websites locally; public hosting is not included. Custom columns are text. Backend code nodes are synchronous trusted JavaScript, not an OS sandbox.
-
-## Validation
-
-Core tests, packaged editor tests, standalone website export tests, and native project transfer integration passed on Windows. See VALIDATION.md for scope and limitations.
+The Windows build is unsigned. Websites run locally. See VALIDATION.md for test scope and limits.

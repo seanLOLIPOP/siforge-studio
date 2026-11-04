@@ -20,3 +20,10 @@
 .project-actions>div button{display:block;width:100%;text-align:left;border:0;padding:10px 12px;background:white;white-space:nowrap}
 .project-actions>div button:hover{background:#f0f2fd}
 #transfer-progress{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;background:#f7f8fce8;font-size:14px;color:#626981;cursor:wait}
+.designer-tools{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:8px 10px;margin-bottom:8px;background:white;border:1px solid var(--line);border-radius:7px}
+.designer-tools label{margin:0;display:flex;align-items:center;gap:6px;font-size:10px;white-space:nowrap}
+.designer-tools label select{margin:0;width:auto;padding:5px 8px;font-size:10px}
+.designer-tools label input[type=checkbox]{margin:0;accent-color:var(--accent)}
+.designer-tools #grid-size{width:48px;padding:5px;font-size:10px}
+.position-controls .property-section{margin-top:16px}
+.position-controls .property-actions button{font-size:9px}

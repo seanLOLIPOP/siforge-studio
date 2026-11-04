@@ -1,7 +1,7 @@
 {
   "name": "si-forge-studio-v1",
   "productName": "SI FORGE STUDIO",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "main": "desktop/main.cjs",
@@ -14,7 +14,8 @@
     "test:desktop": "node scripts/smoke.mjs",
     "test:export": "node scripts/export-smoke.mjs",
     "test:project-transfer": "node scripts/project-transfer-smoke.mjs",
-    "build": "node scripts/package.mjs"
+    "build": "node scripts/package.mjs",
+    "test:designer": "node scripts/designer-smoke.mjs"
   },
   "devDependencies": {
     "electron": "45.0.0",

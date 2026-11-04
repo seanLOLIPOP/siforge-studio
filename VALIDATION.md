@@ -4,7 +4,7 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 
 ## Passed
 
-- Six automated core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
+- Eleven automated tests, including snapping, rotated resizing, layout commands, mobile overrides, stacking and runtime layout rendering, plus core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
 - AES-256-GCM envelope contains no plaintext project name, backend code marker, or record marker. Wrong passwords and modified ciphertext fail to decrypt.
 - Account signup and login use salted password hashes. Account A cannot read Account B's records. Project editor responses omit hashes and table rows from the page model.
 - Insert followed by a failed backend node rolls back. Records and account hashes survive lock/unlock. Password rotation rejects the old password.
@@ -14,6 +14,8 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 - Preview and exported website have no `window.desktop` bridge. The editor and website use separate loopback ports. The desktop bridge validates the sender main frame and editor origin.
 - Studio and website screenshots were rendered and visually inspected.
 - Project transfer desktop integration: native save/open picker handlers, encrypted file export, canceled dialogs, wrong password while keeping another project open, import into a second workspace, imported account login and owned records, editable frontend code, start-screen import, and duplicate-copy safety. The native picker results are stubbed in automation; the actual desktop IPC and disk writes are exercised.
+
+- Designer integration: flow reorder, free dragging, guide cancellation, grid snapping, resize, rotation and rotated resize, duplicate, stacking, undo/redo, keyboard nudging, Alt reparenting, automatic mobile stacking, mobile override/reset, running website geometry parity, and encrypted reopen.
 
 ## Portable delivery
 
@@ -28,7 +30,7 @@ The standalone exported website was moved to another folder and launched success
 - Displayed record lists are capped at 1000 rows. All rows are retained in encrypted project snapshots.
 - Backend Code nodes are synchronous JavaScript with a 300 ms VM timeout. They are trusted project code, not an OS sandbox. Async code, packages, and direct filesystem/network libraries are not provided.
 - Frontend HTML/CSS/JS extensions are per page. Arbitrary code does not round-trip into visual elements.
-- Visual layout uses nested containers and CSS properties; free-position absolute dragging and a full animation timeline are not included.
+- Visual layout supports one selected element at a time, nested containers, free positioning, resize and rotation. Multi-selection, a full animation timeline, and arbitrary custom CSS transform editing are not included.
 - Mobile overrides use one 600 px breakpoint. Native builds target Windows x64 and are unsigned.
 - Encryption protects saved project files, not process memory, OS swap, crash dumps, or information exposed by custom code. There is no password recovery or automatic backup service.
 

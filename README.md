@@ -12,11 +12,13 @@ Create a project with a password of at least 10 characters. The starter has a ho
 
 ## Workspaces
 
-- **Design**: click or drag components to add them; select on the canvas or in Layers. Edit text, style, fields, table bindings, and form endpoints. Drag layers to reorder or nest. Desktop/mobile preview, mobile style overrides (600 px breakpoint), saved reusable blocks, duplicate, delete, undo/redo, and page settings are included. Layout uses CSS properties; free-position absolute dragging is not included in this first build.
+- **Design**: click or drag components to add them; select on the canvas or in Layers. Edit text, style, fields, table bindings, and form endpoints. Drag layers to reorder or nest. Desktop/mobile preview, mobile style overrides (600 px breakpoint), saved reusable blocks, duplicate, delete, undo/redo, and page settings are included. Drag elements to reorder in Layout mode, or choose Free position for overlap and exact X/Y placement. Selection handles resize and rotate. Properties provides exact values and Bring forward / Send backward. Guides and adjustable Grid have separate toggles. Hold Alt while dragging to move into another container. Desktop positions stack on mobile; Mobile accepts separate overrides and a reset control.
 - **Backend**: add endpoints and request/validate/condition/insert/list/code/response nodes. Drag nodes. Click an output dot then a destination node to connect. Set false branches in node settings. Configuration is JSON. A request must reach a response; execution is capped at 100 steps. Tests use the `studio` record owner. Node input/output tracing is limited to identifiers, timings, and errors.
 - **Database**: create tables with custom text columns, insert records, delete records, and inspect users. IDs, owners, and timestamps are automatic. Website access requires a signed-in account and is scoped by record owner. Schema alteration, arbitrary SQL, relationships, and pagination beyond the first 1000 displayed rows are not included.
 - **Code**: per-page HTML, CSS, and JavaScript; custom synchronous JavaScript in backend Code nodes. Return an updated `input` from backend code. Custom HTML is not converted back into visual elements. Backend code has a 300 ms VM timeout and no provided `require` or network API. It is trusted project code, not an OS security sandbox. Async backend code and external packages are not supported.
 - **Settings**: website name, global accent/background, password change, and quick guide.
+
+Designer shortcuts: arrow keys nudge free elements by 1 px (Shift: 10 px), or reorder layout elements. Ctrl+D duplicates; Delete removes; Ctrl+Z / Ctrl+Y undo and redo. Escape cancels a drag. Shift snaps rotation to 15 degrees or preserves resize proportions. Ctrl temporarily disables snapping. Each gesture is one undo step.
 
 ## Encryption and portability
 
@@ -46,6 +48,7 @@ npm test
 npm start
 npm run build
 npm run test:desktop
+npm run test:designer
 npm run test:export
 npm run test:project-transfer
 ```
