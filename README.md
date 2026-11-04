@@ -26,9 +26,15 @@ Keep your password safe: there is no recovery. Back up encrypted project files r
 
 `projects/`, `exports/`, and Electron profile/cache folders are created beside the packaged EXE. Source development uses `workspace/` instead. Upload images through Properties to embed them; external image URLs need internet and are not downloaded automatically. Offline portability applies to built-in features and embedded assets, not custom external services.
 
-## Export
+## Import and export projects
 
-Export writes a standalone folder under `exports/`, with `SI FORGE Website.exe`, the bundled runtime, and a copy of the password-encrypted project. Open the EXE, unlock the project, and the website runs locally. The exported copy has its own data. It does not deploy a public server. Runtime listeners bind to 127.0.0.1 only. HTTPS, email verification, password reset, internet hosting, and production account administration are outside this V1.
+Choose **Project → Export project**, then choose where to save the `.siforge` file. This is an editable, password-encrypted copy of the whole project: pages, styles, code, backend flows, embedded assets, account hashes, and database records. It uses the current project password and does not include the app runtime.
+
+On another Studio installation, choose **Import project** on the start screen, or **Project → Import project** while editing. Select the `.siforge` file and enter its password. Studio validates the file, saves the current project if one is open, and opens a new local copy. Imports get unique filenames; existing projects are preserved. Incorrect passwords and invalid files leave the current project open. Importing does not change the source file. The file limit is 128 MB.
+
+## Export a website
+
+**Project → Export website** writes a standalone folder under `exports/`, with `SI FORGE Website.exe`, the bundled runtime, and a copy of the password-encrypted project. Open the EXE, unlock the project, and the website runs locally. The exported copy has its own data. It does not deploy a public server. Runtime listeners bind to 127.0.0.1 only. HTTPS, email verification, password reset, internet hosting, and production account administration are outside this V1.
 
 ## Develop / verify
 
@@ -41,6 +47,7 @@ npm start
 npm run build
 npm run test:desktop
 npm run test:export
+npm run test:project-transfer
 ```
 
 Development dependency installation needs internet. The packaged app bundles its own runtimes and does not require npm or a separate Node installation. `npm run build` uses the installed Electron runtime and the current Node executable. `SI_ELECTRON_RUNTIME` can select another predownloaded Windows Electron runtime. The build tools also support the original local sibling runtime as a fallback, but it is not required after `npm install`.

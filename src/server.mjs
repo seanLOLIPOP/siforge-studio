@@ -7,6 +7,7 @@ import {starter,validateProject} from './model.mjs';
 import {derive,seal,openVault,atomicWrite} from './vault.mjs';
 import {Database} from './database.mjs';
 import {exportWebsite} from './export.mjs';
+import {MAX_PROJECT_FILE_BYTES,prepareProjectImport,saveImportedProject} from './project-transfer.mjs';
 import {runFlow} from './flows.mjs';
 import {renderPage,esc} from '../public/render.mjs';
 const source=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -24,14 +25,23 @@ export async function createStudio({root=path.join(source,'workspace'),token=ran
  function user(req){const sid=(req.headers.cookie||'').match(/(?:^|;\s*)si_session=([a-f0-9]+)/)?.[1],s=sessions.get(sid);if(!s||s.expires<Date.now()){if(sid)sessions.delete(sid);throw Object.assign(Error('Sign in to access your records.'),{status:401});}return required().project.users.find(u=>u.id===s.id);}
  function limit(key){const now=Date.now();const a=attempts.get(key);if(a&&a.until>now&&a.count>=10)throw Object.assign(Error('Too many attempts. Try again in one minute.'),{status:429});if(!a||a.until<now)attempts.set(key,{count:1,until:now+60000});else a.count++;}
  function establish(u,res){const sid=randomBytes(32).toString('hex');sessions.set(sid,{id:u.id,expires:Date.now()+8*60*60*1000});res.setHeader('Set-Cookie',`si_session=${sid}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800`);return {user:{id:u.id,email:u.email}};}
- async function body(req){let bytes=0,chunks=[];for await(const chunk of req){bytes+=chunk.length;if(bytes>20*1024*1024)throw Error('Request exceeds 20 MB.');chunks.push(chunk);}return chunks.length?JSON.parse(Buffer.concat(chunks).toString()):{};}
+ async function body(req,maxBytes=20*1024*1024){let bytes=0,chunks=[];for await(const chunk of req){bytes+=chunk.length;if(bytes>maxBytes)throw Error('Request is too large.');chunks.push(chunk);}return chunks.length?JSON.parse(Buffer.concat(chunks).toString()):{};}
  const json=(res,data,code=200)=>{res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
  function security(req,res,origin){res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('Cache-Control','no-store');if(req.headers.host!==new URL(origin).host)throw Object.assign(Error('Invalid host.'),{status:403});if(req.headers.origin&&req.headers.origin!==origin)throw Object.assign(Error('Cross-origin request rejected.'),{status:403});}
  async function studioAPI(req,res,url){
   if(req.headers['x-studio-token']!==token)throw Object.assign(Error('Studio authorization required.'),{status:403});
-  const action=url.pathname.slice('/studio/'.length),b=req.method==='POST'?await body(req):{};
+  const action=url.pathname.slice('/studio/'.length),b=req.method==='POST'?await body(req,action==='import-project'?MAX_PROJECT_FILE_BYTES+16384:20*1024*1024):{};
   if(action==='status')return status();
   if(action==='projects')return {files:(await fs.readdir(path.join(root,'projects'))).filter(f=>f.endsWith('.siforge'))};
+  if(action==='import-project'){
+   if(siteOnly)throw Object.assign(Error('Import projects in SI FORGE STUDIO.'),{status:403});
+   if(req.method!=='POST')throw Object.assign(Error('Use POST to import a project.'),{status:405});
+   limit('unlock');const imported=prepareProjectImport(b.contents,b.password);let file;
+   try{file=await saveImportedProject(path.join(root,'projects'),b.contents,imported.project.name);await lock();}
+   catch(error){imported.database.close();imported.key.fill(0);if(file)await fs.rm(fileFor(file),{force:true});throw error;}
+   active={project:imported.project,key:imported.key,salt:imported.salt,file};db=imported.database;sessions.clear();logs.length=0;
+   return {...status(),project:publicProject()};
+  }
   if(action==='create'){
    if(siteOnly)throw Error('Create projects in SI FORGE STUDIO.');if(active)throw Error('Lock your current project first.');
    const project=validateProject(starter(String(b.name||'My workspace').trim()));const file=project.name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,60)+'-'+randomBytes(3).toString('hex')+'.siforge';
@@ -43,6 +53,11 @@ export async function createStudio({root=path.join(source,'workspace'),token=ran
   if(action==='lock'){await lock();return status();}
   required();
   if(action==='project')return {project:publicProject(),...status()};
+  if(action==='export-project'){
+   if(siteOnly)throw Object.assign(Error('Export projects from the editor.'),{status:403});
+   if(req.method!=='POST')throw Object.assign(Error('Use POST to export a project.'),{status:405});
+   await persist();return {filename:active.project.name.replace(/[^a-zA-Z0-9_-]/g,'-').slice(0,60)+'.siforge',contents:await fs.readFile(fileFor(active.file),'utf8')};
+  }
   if(action==='save'){
    if(siteOnly)throw Error('Editing is disabled in website mode.');const incoming=clone(b.project);incoming.users=active.project.users;for(const table of incoming.tables||[]){table.rows=active.project.tables.find(t=>t.name===table.name)?.rows||[];}
    db.snapshot();for(const table of incoming.tables||[])table.rows=active.project.tables.find(t=>t.name===table.name)?.rows||[];

@@ -1,10 +1,10 @@
 # Windows V1 validation
 
-Validated on this Windows machine on November 3, 2026. This is a working unsigned V1 build, not a claim of a production security audit or testing on every Windows configuration.
+Validated on this Windows machine on November 4, 2026. This is a working unsigned V1 build, not a claim of a production security audit or testing on every Windows configuration.
 
 ## Passed
 
-- Four automated core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle.
+- Six automated core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
 - AES-256-GCM envelope contains no plaintext project name, backend code marker, or record marker. Wrong passwords and modified ciphertext fail to decrypt.
 - Account signup and login use salted password hashes. Account A cannot read Account B's records. Project editor responses omit hashes and table rows from the page model.
 - Insert followed by a failed backend node rolls back. Records and account hashes survive lock/unlock. Password rotation rejects the old password.
@@ -13,6 +13,7 @@ Validated on this Windows machine on November 3, 2026. This is a working unsigne
 - Packaged export integration: real signup UI, authenticated dashboard form, database table refresh, saved reusable block, mobile property edit, full runtime export, move exported folder, launch standalone EXE, sign in with persisted account, read persisted record, add another record, and close gracefully.
 - Preview and exported website have no `window.desktop` bridge. The editor and website use separate loopback ports. The desktop bridge validates the sender main frame and editor origin.
 - Studio and website screenshots were rendered and visually inspected.
+- Project transfer desktop integration: native save/open picker handlers, encrypted file export, canceled dialogs, wrong password while keeping another project open, import into a second workspace, imported account login and owned records, editable frontend code, start-screen import, and duplicate-copy safety. The native picker results are stubbed in automation; the actual desktop IPC and disk writes are exercised.
 
 ## Portable delivery
 

@@ -20,6 +20,7 @@ if(!app.requestSingleInstanceLock())app.quit();else {
   origin=new URL(info.url).origin;siteOrigin=info.preview;
   win=new BrowserWindow({width:1500,height:960,minWidth:1050,minHeight:720,title:'SI FORGE STUDIO',backgroundColor:'#f7f8fc',show:process.env.SI_TEST_HIDDEN!=='1',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,backgroundThrottling:false,additionalArguments:['--studio-origin='+origin]}});
   const trusted=event=>{if(event.sender!==win.webContents||event.senderFrame!==win.webContents.mainFrame||new URL(event.senderFrame.url).origin!==origin)throw Error('Desktop access denied.');};
+  require('./project-transfer.cjs')({ipcMain,dialog,win,trusted,origin,token,root,siteOnly});
   ipcMain.handle('open-website',async(event,url)=>{trusted(event);if(new URL(url).origin!==siteOrigin)throw Error('Only the local website can be opened.');await shell.openExternal(url);});
   ipcMain.handle('close-ready',async event=>{trusted(event);const r=await fetch(origin+'/studio/lock',{method:'POST',headers:{'X-Studio-Token':token,'Content-Type':'application/json'},body:'{}'});if(!r.ok)throw Error('Could not save and lock the project.');allowClose=true;win.close();});
   win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
