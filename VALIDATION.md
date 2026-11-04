@@ -4,7 +4,7 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 
 ## Passed
 
-- Fifteen automated tests, including snapping, rotated resizing, layout commands, mobile overrides, stacking and runtime layout rendering, navbar presets, validation, escaping and responsive rules, plus core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
+- Twenty automated tests, including snapping, rotated resizing, layout commands, mobile overrides, stacking and runtime layout rendering, navbar presets, validation, escaping and responsive rules, plus core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
 - AES-256-GCM envelope contains no plaintext project name, backend code marker, or record marker. Wrong passwords and modified ciphertext fail to decrypt.
 - Account signup and login use salted password hashes. Account A cannot read Account B's records. Project editor responses omit hashes and table rows from the page model.
 - Insert followed by a failed backend node rolls back. Records and account hashes survive lock/unlock. Password rotation rejects the old password.
@@ -21,9 +21,19 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 
 - Navbar integration: five variations, embedded logo, light/dark styling, breakpoint edits, drag between sections, large panel links, device visibility, tablet drawer and mobile fullscreen menu, page reuse, real signup/login/logout on a blank page, duplicate/delete, encrypted reopen, moved standalone website export with existing account login and shared navbar navigation.
 
+- Shadow generator: box and glyph presets, bounded 3D layers, linked/custom colors, invalid-setting rejection, mobile overrides and runtime CSS. Desktop integration covers live background/text color edits, text changes, 3D depth, mobile override/reset, navbar and individual item effects, running website parity, encrypted reopen and moved standalone export.
+
+## Native migration validation
+
+- .NET 10 self-contained WPF build compiles without errors or warnings. Native buttons, text/password fields, selectors, code fields, modal forms, backend graph and database grid were exercised through the actual WPF controls.
+- Native project creation, design text/shadows, navbar assignment, flow execution and real database inserts, code/settings, save/lock/reopen, encrypted project picker transfer, and canvas/property geometry parity passed.
+- The native website export was moved, launched from its own bundled .NET/Node/WebView2 files, unlocked, rendered at full size and used to create a website account. Website pages do not expose the desktop bridge.
+- Native picker selections are stubbed in automated transfer tests; the actual native handlers and disk I/O run. Native preview capture targets only the app window and its own WebView surface.
+- A blank-project sample measured roughly 368 MiB private allocation for native and 286 MiB for Electron 1.5. No reduced-memory or faster-startup claim is made. Native controller migration and performance optimization remain in progress; the full feature set is retained through the shared editing engine.
+
 ## Portable delivery
 
-`release/SI FORGE STUDIO/` includes Electron, Node, required libraries, license notices, source/runtime files, and the launch EXE. Packaged startup uses the included `runtime/node.exe`. No package manager, external database server, WebView2 installer, or separate Node installation is required by the built-in starter.
+`release/SI FORGE STUDIO Native/` includes the self-contained WPF/.NET runtime, fixed WebView2 156 runtime, Node, required libraries, license notices, source/runtime files and the launch EXE. The classic build remains separately available. Packaged startup uses the included `runtime/node.exe`. No package manager, external database server, WebView2 installer, separate .NET installation, or separate Node installation is required by the built-in starter.
 
 The standalone exported website was moved to another folder and launched successfully on this machine. A second physical Windows PC and a network-disabled machine have not been tested. Built-in features use only local files and loopback requests; custom external URLs, JavaScript, or services can require internet.
 

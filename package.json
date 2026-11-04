@@ -1,7 +1,7 @@
 {
   "name": "si-forge-studio-v1",
   "productName": "SI FORGE STUDIO",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "main": "desktop/main.cjs",
@@ -9,16 +9,22 @@
     "node": ">=24.22.0"
   },
   "scripts": {
-    "start": "node scripts/dev.mjs",
+    "start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-native.ps1",
     "test": "node --test tests/*.test.mjs",
     "test:desktop": "node scripts/smoke.mjs",
     "test:export": "node scripts/export-smoke.mjs",
     "test:project-transfer": "node scripts/project-transfer-smoke.mjs",
-    "build": "node scripts/package.mjs",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-native.ps1",
     "test:designer": "node scripts/designer-smoke.mjs",
     "test:blank": "node scripts/blank-smoke.mjs",
-    "deliver:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deliver.ps1",
-    "test:navbar": "node scripts/navbar-smoke.mjs"
+    "deliver:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deliver-native.ps1",
+    "test:navbar": "node scripts/navbar-smoke.mjs",
+    "test:shadows": "node scripts/shadows-smoke.mjs",
+    "build:native": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-native.ps1",
+    "build:classic": "node scripts/package.mjs",
+    "start:classic": "node scripts/dev.mjs",
+    "deliver:classic": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/deliver.ps1",
+    "test:native": "node scripts/native-smoke.mjs"
   },
   "devDependencies": {
     "electron": "45.0.0",

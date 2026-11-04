@@ -1,8 +1,10 @@
+import {mountShadowEditor} from './shadow-editor.mjs';
 import {createNavbarStudio} from './navbar-studio.mjs';
 import {renderPage,esc} from './render.mjs';
 import {renderPageInspector} from './page-editor.mjs';
 import {createDesigner} from './designer.mjs';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const nativeMode=new URLSearchParams(location.search).get('native')==='1';
 let token=location.hash.slice(1);window.history.replaceState(null,'',location.pathname);
 let project=null,pageId=null,selected=null,view='design',flowId=null,nodeId=null,tableName=null,codeKind='html',preview='',siteOnly=false,createMode=true;
 let history=[],future=[],saveTimer,dirty=false,revision=0,saveChain=Promise.resolve(),linkFrom=null,dragType=null,dragElement=null;
@@ -45,6 +47,7 @@ function renderProperties(){
  $('#save-block').onclick=safe(async()=>{const v=await modal('Save reusable block','<label>Block name<input name="name" required placeholder="My component"></label>','Save block');if(!v)return;checkpoint();(project.blocks??=[]).push({id:crypto.randomUUID(),name:v.name,element:structuredClone(e)});changed();});
  $('#delete-element').onclick=()=>{checkpoint();remove(selected);selected=null;changed();};$('#duplicate-element').onclick=()=>{checkpoint();const copy=structuredClone(e);const newid=item=>{item.id=crypto.randomUUID();item.children.forEach(newid);};newid(copy);walk(page().elements,(item,d,list)=>{if(item.id===e.id)list.splice(list.indexOf(item)+1,0,copy);});selected=copy.id;changed();};
  for(const [selector,delta]of [['#move-up',-1],['#move-down',1]])$(selector).onclick=()=>{let location;walk(page().elements,(item,d,list)=>{if(item.id===e.id)location={list,index:list.indexOf(item)};});if(!location)return;const {list,index}=location,j=index+delta;if(j<0||j>=list.length)return;checkpoint();[list[index],list[j]]=[list[j],list[index]];changed();};
+ mountShadowEditor($('#properties'),mobile?{...e.effects,...e.mobileEffects}:e.effects,{scope:e.id+':'+mobile,background:style.background||'#ffffff',color:style.color||project.theme.text,accent:project.theme.accent,onChange:value=>{checkpoint();e[mobile?'mobileEffects':'effects']=value;changed();},error:message=>toast(message,true),reset:mobile?()=>{checkpoint();delete e.mobileEffects;changed();}:null});
  designer.decorateInspector(e);
 }
 async function modal(title,html,confirm='Continue'){$('#modal-title').textContent=title;$('#modal-body').innerHTML=html;$('#modal-confirm').textContent=confirm;$('#modal').returnValue='';$('#modal').showModal();return new Promise(resolve=>{$('#modal').onclose=()=>{const values={};$('#modal-body').querySelectorAll('[name]').forEach(el=>values[el.name]=el.type==='checkbox'?el.checked:el.value);resolve($('#modal').returnValue==='ok'?values:null);};});}
@@ -128,7 +131,7 @@ $('#project-form').onsubmit=async event=>{event.preventDefault();$('#unlock-butt
 addEventListener('keydown',e=>{if(projectTransferBusy){e.preventDefault();return;}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();if(project)save().catch(e=>toast(String(e.message||e).replace(/^Error invoking remote method '[^']+': (?:Error: )?/,''),true));}if((e.ctrlKey||e.metaKey)&&!['INPUT','TEXTAREA'].includes(e.target.tagName)){if(e.key.toLowerCase()==='z'){e.preventDefault();$('#undo').click();}if(e.key.toLowerCase()==='y'){e.preventDefault();$('#redo').click();}}if(e.key==='Escape'){linkFrom=null;if(view==='backend')renderBackend();}});
 if(window.desktop){window.desktop.onBeforeClose(async()=>{designer.cancel();if(projectTransferBusy){toast('Wait for the project transfer to finish.');return;}try{if(project)await save();await window.desktop.closeReady();}catch(e){toast('Could not save. Keep the app open and try again: '+e.message,true);}});}
 async function init(){const r=await api('status');preview=r.preview;siteOnly=r.siteOnly;if(siteOnly){$('#new-tab').hidden=true;await gate(false);}else if(r.unlocked)enter(await api('project'));else {const {files}=await api('projects');await gate(!files.length);}}
-init().catch(e=>{$('#gate-error').textContent=e.message;});
+const studioInitialization=init().catch(e=>{$('#gate-error').textContent=e.message;});
 
 function renderBlocks(){const host=$('#saved-blocks');host.innerHTML=(project.blocks||[]).map(b=>'<div class="page-item"><button data-block="'+b.id+'" style="flex:1;text-align:left">◈ '+esc(b.name)+'</button><button data-remove-block="'+b.id+'" title="Remove saved block">×</button></div>').join('')||'<p class="hint">Select a component and choose Save block.</p>';$$('[data-block]').forEach(button=>button.onclick=()=>{const block=project.blocks.find(b=>b.id===button.dataset.block);checkpoint();const e=structuredClone(block.element);const ids=item=>{item.id=crypto.randomUUID();(item.children||[]).forEach(ids);};ids(e);const parent=find(selected);if(parent&&['container','form'].includes(parent.type))parent.children.push(e);else page().elements.push(e);selected=e.id;changed();});$$('[data-remove-block]').forEach(button=>button.onclick=()=>{checkpoint();project.blocks=project.blocks.filter(b=>b.id!==button.dataset.removeBlock);changed();});}
 
@@ -153,3 +156,9 @@ function setupDrag(el,type,id){
   el.onpointercancel=()=>{ghost?.remove();shield?.remove();el.onpointermove=null;el.onpointerup=null;};
  };
 }
+
+if(nativeMode)studioInitialization.then(()=>import('./native-adapter.mjs')).then(({installNative})=>installNative({
+ view:()=>view,showView,getProject:()=>project,setDrag:(type,id)=>{dragType=type;dragElement=id;},
+ graph:()=>({nodes:flow()?.nodes||[],selected:nodeId,linkFrom}),
+ graphAction:action=>{const f=flow();if(!f)return;if(action.op==='cancel'){linkFrom=null;renderBackend();return;}if(action.op==='port'){linkFrom=action.id;renderBackend();}else if(action.op==='move'){const n=f.nodes.find(n=>n.id===action.id);if(n){checkpoint();n.x=Math.max(15,action.x);n.y=Math.max(15,action.y);changed(false);renderBackend();}}else{if(linkFrom&&linkFrom!==action.id){checkpoint();f.nodes.find(n=>n.id===linkFrom).next=action.id;linkFrom=null;changed(false);}nodeId=action.id;renderBackend();}}
+})).catch(error=>toast(error.message,true));

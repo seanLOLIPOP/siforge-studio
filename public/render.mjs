@@ -1,11 +1,12 @@
+import {effectStyles} from './shadows.mjs';
 import {renderNavbar,navbarCSS} from './navbar.mjs';
 import {layoutFor,layoutStyle,freeExtent} from './layout.mjs';
 export const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function renderElement(e,edit=false){
- const styles={...e.style,...layoutStyle(e)},extent=freeExtent(e.children||[]);
+export function renderElement(e,edit=false,accent='#5263e8'){
+ const styles={...e.style,...layoutStyle(e),...effectStyles(e.effects,{background:e.style?.background,accent})},extent=freeExtent(e.children||[]);
  if(['container','form'].includes(e.type)){styles.position=layoutFor(e).mode==='free'?'absolute':'relative';if(extent)styles.minHeight=`max(${e.style?.minHeight||'0px'}, ${extent}px)`;}
  const attrs=`data-element="${esc(e.id)}" data-kind="${esc(e.type)}" data-layout="${esc(JSON.stringify({desktop:layoutFor(e),mobile:layoutFor(e,true)}))}" style="${esc(Object.entries(styles).map(([k,v])=>k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())+':'+v).join(';'))}"`;
- const kids=(e.children||[]).map(c=>renderElement(c,edit)).join('');const text=esc(e.text);
+ const kids=(e.children||[]).map(c=>renderElement(c,edit,accent)).join('');const text=esc(e.text);
  switch(e.type){
  case 'container':return `<section ${attrs}>${kids||'<p class="placeholder">Drop components here</p>'}</section>`;
  case 'heading':return `<h1 ${attrs}>${text}</h1>`;
@@ -27,7 +28,7 @@ export function canvasStyles(page,mobile=false){
  return {width:'100%',maxWidth:'none',margin:'0 auto',padding:mobile?'24px 16px':'42px 30px',display:'flex',flexDirection:'column',gap:'24px',...c,...m};
 }
 export function renderPage(project,page,edit=false){
- const mobileRules=[];const visit=els=>{for(const e of els){const styles={...layoutStyle(e,true),...e.mobileStyle};if(['container','form'].includes(e.type)&&(freeExtent(e.children||[])||freeExtent(e.children||[],true)))styles.minHeight=freeExtent(e.children||[],true)+'px';if(Object.keys(styles).length)mobileRules.push(`[data-element="${e.id.replace(/[^a-zA-Z0-9_-]/g,'')}"]{${Object.entries(styles).map(([k,v])=>k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())+':'+v+' !important').join(';')}}`);visit(e.children||[]);}};visit(page.elements);
+ const mobileRules=[];const visit=els=>{for(const e of els){const styles={...layoutStyle(e,true),...e.mobileStyle,...effectStyles({...e.effects,...e.mobileEffects},{background:e.mobileStyle?.background||e.style?.background,accent:project.theme.accent})};if(['container','form'].includes(e.type)&&(freeExtent(e.children||[])||freeExtent(e.children||[],true)))styles.minHeight=freeExtent(e.children||[],true)+'px';if(Object.keys(styles).length)mobileRules.push(`[data-element="${e.id.replace(/[^a-zA-Z0-9_-]/g,'')}"]{${Object.entries(styles).map(([k,v])=>k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())+':'+v+' !important').join(';')}}`);visit(e.children||[]);}};visit(page.elements);
  const customNavbar=project.navbars?.find(n=>n.id===page.navbarId);
  const canvas=canvasStyles(page),mobileCanvas=canvasStyles(page,true),navigation=page.navigation||{};
  const rootStyle={position:'relative',minHeight:'max(100vh, '+freeExtent(page.elements)+'px)',background:page.background||project.theme.background};
@@ -41,5 +42,5 @@ export function renderPage(project,page,edit=false){
  [data-sf-root]{isolation:isolate}[data-sf-content]{position:static}[data-sf-nav] a{color:inherit}[data-element]{overflow-wrap:anywhere}
  @media(max-width:600px){[data-kind="container"],[data-kind="form"]{flex-direction:column!important;grid-template-columns:minmax(0,1fr)!important}[data-sf-root]{min-height:max(100vh, ${freeExtent(page.elements,true)}px)!important}[data-sf-content]{${cssText(mobileCanvas).split(';').join('!important;')}!important}${mobileRules.join('')}}
  ${customNavbar?navbarCSS(customNavbar):''}
- ${page.css||''}</style></head><body><div data-sf-root style="${esc(cssText(rootStyle))}">${customNavbar?renderNavbar(customNavbar):`<nav data-sf-nav style="${esc(cssText(navStyle))}"><strong data-sf-brand>${esc(navigation.title??project.name)}</strong>${nav}</nav>`}<main data-sf-content style="${esc(cssText(canvas))}">${page.elements.map(e=>renderElement(e,edit)).join('')}${edit?'':page.html||''}</main></div>${edit?`<script>${selectScript}</script>`:`<script src="/site.js"></script>${customNavbar?'<script src="/navbar-runtime.js"></script>':''}<script>${(page.js||'').replace(/<\/script/gi,'<\\/script')}</script>`}</body></html>`;
+ ${page.css||''}</style></head><body><div data-sf-root style="${esc(cssText(rootStyle))}">${customNavbar?renderNavbar(customNavbar):`<nav data-sf-nav style="${esc(cssText(navStyle))}"><strong data-sf-brand>${esc(navigation.title??project.name)}</strong>${nav}</nav>`}<main data-sf-content style="${esc(cssText(canvas))}">${page.elements.map(e=>renderElement(e,edit,theme.accent)).join('')}${edit?'':page.html||''}</main></div>${edit?`<script>${selectScript}</script>`:`<script src="/site.js"></script>${customNavbar?'<script src="/navbar-runtime.js"></script>':''}<script>${(page.js||'').replace(/<\/script/gi,'<\\/script')}</script>`}</body></html>`;
 }

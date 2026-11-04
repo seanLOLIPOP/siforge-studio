@@ -1,3 +1,4 @@
+import {validateEffects} from '../public/shadows.mjs';
 import {validateNavbars} from '../public/navbar.mjs';
 import {randomUUID} from 'node:crypto';
 export const id=()=>randomUUID();
@@ -23,7 +24,7 @@ export function validateProject(p){
   if(!Array.isArray(p.tables)||!Array.isArray(p.flows)||!Array.isArray(p.users))throw Error('Invalid project data.');
   const elementIds=new Set();let elementCount=0;
   function checkLayout(value){if(value===undefined)return;if(!value||Array.isArray(value)||!['flow','free'].includes(value.mode))throw Error('Invalid element positioning mode.');for(const key of ['x','y','width','height','rotation','z'])if(value[key]!==undefined&&(typeof value[key]!=='number'||!Number.isFinite(value[key])||Math.abs(value[key])>360000||(['x','y','width','height','z'].includes(key)&&value[key]<0)))throw Error('Invalid element position or size.');}
-  const checkElements=(elements,depth=0)=>{if(depth>30)throw Error('Components are nested too deeply.');for(const e of elements){if(++elementCount>5000||typeof e.id!=='string'||!/^[-a-zA-Z0-9_]{1,80}$/.test(e.id)||elementIds.has(e.id))throw Error('Invalid or duplicate component ID.');elementIds.add(e.id);if(!['container','heading','text','button','input','form','table','image','auth'].includes(e.type)||!Array.isArray(e.children))throw Error('Invalid component.');checkElements(e.children,depth+1);}};
+  const checkElements=(elements,depth=0)=>{if(depth>30)throw Error('Components are nested too deeply.');for(const e of elements){if(++elementCount>5000||typeof e.id!=='string'||!/^[-a-zA-Z0-9_]{1,80}$/.test(e.id)||elementIds.has(e.id))throw Error('Invalid or duplicate component ID.');elementIds.add(e.id);if(!['container','heading','text','button','input','form','table','image','auth'].includes(e.type)||!Array.isArray(e.children))throw Error('Invalid component.');validateEffects(e.effects);validateEffects(e.mobileEffects);checkElements(e.children,depth+1);}};
   for(const page of p.pages){
     const checkStyle=value=>{if(value===undefined)return;if(!value||typeof value!=='object'||Array.isArray(value)||Object.entries(value).some(([k,v])=>!/^[-a-zA-Z]+$/.test(k)||typeof v!=='string'||v.length>200))throw Error('Invalid canvas style.');};
     checkStyle(page.canvas);checkStyle(page.mobileCanvas);
