@@ -1,0 +1,35 @@
+import {_electron as electron} from './playwright.mjs';
+import fs from 'node:fs/promises';
+import {electronRuntime} from './runtime.mjs';
+import path from 'node:path';
+import os from 'node:os';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+const source=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const root=await fs.mkdtemp(path.join(os.tmpdir(),'si-desktop-'));
+const env={...process.env,SI_NODE:process.execPath,SI_TEST_HIDDEN:'0',SI_WORKSPACE_ROOT:root};delete env.ELECTRON_RUN_AS_NODE;
+const executablePath=process.env.SI_TEST_EXE||path.join(electronRuntime(),'electron.exe');
+const app=await electron.launch({executablePath,args:process.env.SI_TEST_EXE?[]:[source],env,timeout:30000});
+const appPid=app.process().pid;
+app.process().stderr.on('data',v=>console.error('electron:',v.toString()));
+try{
+ const page=await app.firstWindow();page.setDefaultTimeout(5000);const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')console.error('browser:',m.text());});page.on('response',r=>{if(r.status()>=400)console.error('response',r.status(),r.url());});
+ await page.locator('#project-name').fill('Desktop proof');await page.locator('#project-password').fill('desktop test password');await page.locator('#password-confirm').fill('desktop test password');await page.locator('#unlock-button').click();await page.locator('#studio').waitFor({state:'visible'});
+ const frame=page.frameLocator('#canvas');await frame.locator('h1').waitFor();await frame.locator('h1').click();await page.locator('[data-prop="text"]').waitFor();await page.locator('[data-prop="text"]').fill('Made in SI FORGE STUDIO');await page.locator('[data-prop="text"]').press('Tab');await frame.locator('h1').filter({hasText:'Made in SI FORGE STUDIO'}).waitFor();
+ await page.locator('[data-add="text"]').click();assert.equal(await page.locator('#layers .layer').count(),6+1);
+ await page.locator('#undo').click();await page.locator('#redo').click();
+ const sourceBox=await page.locator('[data-add="button"]').boundingBox(),targetBox=await frame.locator('h1').boundingBox();await page.mouse.move(sourceBox.x+sourceBox.width/2,sourceBox.y+sourceBox.height/2);await page.mouse.down();await page.mouse.move(sourceBox.x+sourceBox.width/2+10,sourceBox.y+sourceBox.height/2,{steps:4});await page.mouse.move(targetBox.x+targetBox.width/2,targetBox.y+targetBox.height/2,{steps:20});await page.mouse.up();await page.waitForFunction(()=>document.querySelectorAll('#layers .layer').length===8);await page.locator('#undo').click();
+ await page.locator('#mobile').click();await page.waitForFunction(()=>document.querySelector('#canvas').getBoundingClientRect().width<=391);await page.locator('#desktop').click();
+ await page.locator('[data-view="backend"]').click();await page.locator('[data-node="validate"]').click();await page.locator('#node-config').waitFor();await page.locator('#apply-node').click();
+ const nodeBox=await page.locator('[data-node="validate"]').boundingBox();await page.mouse.move(nodeBox.x+70,nodeBox.y+20);await page.mouse.down();await page.mouse.move(nodeBox.x+100,nodeBox.y+50,{steps:8});await page.mouse.up();assert.ok(parseFloat(await page.locator('[data-node="validate"]').evaluate(el=>el.style.left))>=315);await page.locator('[data-output="request"]').click();await page.locator('[data-node="validate"]').click();assert.equal(await page.locator('#wires path').count(),3);
+ await page.locator('#test-flow').click();await page.locator('#modal-confirm').click();await page.waitForFunction(()=>document.querySelector('#logs').textContent.includes('Task saved'));
+ await page.locator('[data-view="data"]').click();await page.locator('#data-table').getByText('My first task',{exact:true}).waitFor();
+ await page.locator('[data-view="code"]').click();await page.locator('#code-editor').fill('<p class="custom-proof">Custom HTML works</p>');await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='All changes saved');
+ await page.locator('[data-view="design"]').click();await fs.mkdir(path.join(source,'artifacts'),{recursive:true});await page.screenshot({path:path.join(source,'artifacts','studio-v1.png')});
+ const info=await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].webContents.getURL());assert.ok(info.startsWith('http://127.0.0.1:'));
+ await page.locator('#lock').click();await page.locator('#gate').waitFor({state:'visible'});await page.locator('#project-password').fill('desktop test password');await page.locator('#unlock-button').click();await page.locator('#studio').waitFor({state:'visible'});await frame.locator('h1').filter({hasText:'Made in SI FORGE STUDIO'}).waitFor();
+ assert.equal(await frame.locator('body').evaluate(()=>typeof window.desktop),'undefined');assert.deepEqual(errors,[]);
+ console.log('Desktop smoke passed: create/unlock, canvas selection and edit, component add and cross-frame drag/drop, undo/redo, mobile preview, flow execution, database records, custom code save, lock/reopen, and preview privilege isolation.');
+ await Promise.all([app.waitForEvent('close',{timeout:10000}),app.evaluate(({BrowserWindow})=>{BrowserWindow.getAllWindows()[0].close();})]);
+}catch(e){const p=await app.firstWindow();console.error('CANVAS',await p.locator('#canvas').evaluate(el=>({rect:el.getBoundingClientRect().toJSON(),style:getComputedStyle(el).cssText,display:getComputedStyle(el).display,visibility:getComputedStyle(el).visibility,hidden:el.hidden})));console.error('INNER',await p.frameLocator('#canvas').locator('h1').evaluate(el=>({rect:el.getBoundingClientRect().toJSON(),display:getComputedStyle(el).display,visibility:getComputedStyle(el).visibility,body:document.body.getBoundingClientRect().toJSON(),viewport:[innerWidth,innerHeight],html:document.documentElement.style.cssText})));console.error('UI state:',await p.locator('#properties').innerHTML());console.error('frames:',await Promise.all(p.frames().map(f=>f.evaluate(()=>({url:location.href,scripts:[...document.scripts].map(s=>s.src),text:document.body.innerText.slice(0,200)})).catch(e=>e.message))));await p.screenshot({path:path.join(source,'smoke-failure.png')});console.error('FAILURE:',e);throw e;}finally{spawnSync('taskkill',['/pid',String(appPid),'/t','/f']);await fs.rm(root,{recursive:true,force:true,maxRetries:10,retryDelay:200}).catch(()=>{});}

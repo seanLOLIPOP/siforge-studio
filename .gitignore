@@ -1,0 +1,5 @@
+release/
+workspace/
+artifacts/
+smoke-failure.png
+node_modules/

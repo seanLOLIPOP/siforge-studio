@@ -1,0 +1,34 @@
+# Windows V1 validation
+
+Validated on this Windows machine on November 3, 2026. This is a working unsigned V1 build, not a claim of a production security audit or testing on every Windows configuration.
+
+## Passed
+
+- Four automated core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle.
+- AES-256-GCM envelope contains no plaintext project name, backend code marker, or record marker. Wrong passwords and modified ciphertext fail to decrypt.
+- Account signup and login use salted password hashes. Account A cannot read Account B's records. Project editor responses omit hashes and table rows from the page model.
+- Insert followed by a failed backend node rolls back. Records and account hashes survive lock/unlock. Password rotation rejects the old password.
+- Editor API rejects invalid tokens and foreign origins. Locked websites return a locked response. Sessions clear on lock.
+- Desktop source and packaged EXE: create project, canvas selection/edit, component insertion and cross-frame drag/drop, undo/redo, mobile preview, backend node drag/configuration and output connections, graph test, record inspection, custom code save, lock/reopen, and graceful save-on-close.
+- Packaged export integration: real signup UI, authenticated dashboard form, database table refresh, saved reusable block, mobile property edit, full runtime export, move exported folder, launch standalone EXE, sign in with persisted account, read persisted record, add another record, and close gracefully.
+- Preview and exported website have no `window.desktop` bridge. The editor and website use separate loopback ports. The desktop bridge validates the sender main frame and editor origin.
+- Studio and website screenshots were rendered and visually inspected.
+
+## Portable delivery
+
+`release/SI FORGE STUDIO/` includes Electron, Node, required libraries, license notices, source/runtime files, and the launch EXE. Packaged startup uses the included `runtime/node.exe`. No package manager, external database server, WebView2 installer, or separate Node installation is required by the built-in starter.
+
+The standalone exported website was moved to another folder and launched successfully on this machine. A second physical Windows PC and a network-disabled machine have not been tested. Built-in features use only local files and loopback requests; custom external URLs, JavaScript, or services can require internet.
+
+## Explicit V1 limits
+
+- Local websites only; no public deployment, HTTPS provisioning, production email, password reset, or email verification.
+- Custom database columns are text, with insert/list/delete controls; no schema alteration UI, relationships, or arbitrary SQL console.
+- Displayed record lists are capped at 1000 rows. All rows are retained in encrypted project snapshots.
+- Backend Code nodes are synchronous JavaScript with a 300 ms VM timeout. They are trusted project code, not an OS sandbox. Async code, packages, and direct filesystem/network libraries are not provided.
+- Frontend HTML/CSS/JS extensions are per page. Arbitrary code does not round-trip into visual elements.
+- Visual layout uses nested containers and CSS properties; free-position absolute dragging and a full animation timeline are not included.
+- Mobile overrides use one 600 px breakpoint. Native builds target Windows x64 and are unsigned.
+- Encryption protects saved project files, not process memory, OS swap, crash dumps, or information exposed by custom code. There is no password recovery or automatic backup service.
+
+The older `si-forge-studio` and `si-forge` projects were preserved. Their project formats are not automatically migrated.
