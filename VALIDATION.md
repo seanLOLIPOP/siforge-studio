@@ -4,7 +4,7 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 
 ## Passed
 
-- Twenty automated tests, including snapping, rotated resizing, layout commands, mobile overrides, stacking and runtime layout rendering, navbar presets, validation, escaping and responsive rules, plus core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
+- Twenty-three automated tests, including snapping, rotated resizing, layout commands, mobile overrides, stacking and runtime layout rendering, navbar presets, validation, escaping and responsive rules, plus core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
 - AES-256-GCM envelope contains no plaintext project name, backend code marker, or record marker. Wrong passwords and modified ciphertext fail to decrypt.
 - Account signup and login use salted password hashes. Account A cannot read Account B's records. Project editor responses omit hashes and table rows from the page model.
 - Insert followed by a failed backend node rolls back. Records and account hashes survive lock/unlock. Password rotation rejects the old password.
@@ -49,3 +49,5 @@ The standalone exported website was moved to another folder and launched success
 - Encryption protects saved project files, not process memory, OS swap, crash dumps, or information exposed by custom code. There is no password recovery or automatic backup service.
 
 The older `si-forge-studio` and `si-forge` projects were preserved. Their project formats are not automatically migrated.
+
+Navbar layers: native preview/layer selection, brand and account label edits, menu button edits, child duplication/deletion, device visibility, and encrypted reopen are exercised by the native integration test. Layer reordering and ID preservation are covered by model tests.

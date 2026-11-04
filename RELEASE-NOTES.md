@@ -1,13 +1,12 @@
-# SI FORGE STUDIO 2.0.1 Native Preview
+# SI FORGE STUDIO 2.0.2 Native Preview
 
-Dark desktop interface redesign.
+Editable navbar elements and nested Layers.
 
-- Charcoal workspace with violet accents, dark native title bar and consistent native control styling.
-- Icon navigation with an active workspace state and compact component tiles.
-- Paired position and appearance fields, a cleaner toolbar and a collapsible Inspector.
-- Dark project dialogs, database grid, menus and backend graph workspace.
-- Website canvas and exported website colors still follow the project itself.
+- Select the navbar, brand, sign-in control, mobile menu button, links, and dropdown children from the preview or Layers.
+- Inspector edits text, destinations, appearance, device visibility and responsive menu settings.
+- Drag top-level links between sections and reorder them. Reorder dropdown children or move them between dropdowns.
+- Duplicate/delete links and dropdown children; hide and restore the structural brand/account controls.
+- Layer selection is highlighted in the preview, and the inspector scrolls to the selected part.
+- Existing encrypted projects remain compatible; exports use the same saved navbar model.
 
-All existing editing, backend, account, encryption and project transfer features are retained. The shared JavaScript editing engine and Node backend are still used. Performance tuning remains unfinished; this is a preview, not a verified memory or startup upgrade.
-
-Extract the full Windows ZIP and open SI FORGE STUDIO.exe. Keep the runtime files together. The build is unsigned. Public hosting is not included.
+Includes the dark native desktop interface from 2.0.1. Performance tuning remains unfinished. This is an unsigned Windows x64 preview with bundled runtimes. Extract the full ZIP and keep its files together.

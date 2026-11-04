@@ -1,7 +1,7 @@
 {
   "name": "si-forge-studio-v1",
   "productName": "SI FORGE STUDIO",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "type": "module",
   "main": "desktop/main.cjs",

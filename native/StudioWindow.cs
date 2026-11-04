@@ -35,7 +35,7 @@ public sealed partial class StudioWindow : Window
     readonly Dictionary<string,MenuItem> nativeMenus=new();
     DockPanel? chrome;
     readonly Dictionary<string,Button> navigation=new();
-    bool inspectorHidden;
+    bool inspectorHidden;string rightSelection="";
     Button? inspectorToggle;
     readonly List<WebView2> previews=new();
     JsonNode? state;Window? modal;StackPanel? modalBody;string modalSignature="";
