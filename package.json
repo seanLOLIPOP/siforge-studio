@@ -1,11 +1,13 @@
 {
   "name": "si-forge-studio-v1",
   "productName": "SI FORGE STUDIO",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "type": "module",
   "main": "desktop/main.cjs",
-  "engines": {"node": ">=24.22.0"},
+  "engines": {
+    "node": ">=24.22.0"
+  },
   "scripts": {
     "start": "node scripts/dev.mjs",
     "test": "node --test tests/*.test.mjs",
@@ -13,5 +15,8 @@
     "test:export": "node scripts/export-smoke.mjs",
     "build": "node scripts/package.mjs"
   },
-  "devDependencies": {"electron":"45.0.0", "playwright-core":"1.64.1"}
+  "devDependencies": {
+    "electron": "45.0.0",
+    "playwright-core": "1.64.1"
+  }
 }

@@ -4,10 +4,10 @@ export function starter(name='My workspace') {
   const el=(type,text,extra={})=>({id:id(),type,text,style:{},children:[],...extra});
   return {version:1,name,updatedAt:new Date().toISOString(),theme:{accent:'#5263e8',background:'#f6f7fb',text:'#20243b',font:'Inter, system-ui, sans-serif'},
     pages:[{id:id(),name:'Home',path:'/',elements:[
-      el('container','',{style:{padding:'40px',background:'#ffffff',borderRadius:'20px'},children:[el('text','YOUR NEXT GREAT IDEA',{style:{color:'#5263e8',fontSize:'12px',fontWeight:'700'}}),el('heading','A workspace that works for you.'),el('text','Create an account, sign in, and keep your projects moving. Built entirely in SI FORGE STUDIO.'),el('button','Open your dashboard',{href:'/dashboard'})]}),
-      el('auth','Your account'),
+      el('container','',{style:{padding:'40px',background:'#ffffff',borderRadius:'20px'},children:[el('text','Home',{style:{color:'#5263e8',fontSize:'12px',fontWeight:'700'}}),el('heading','Welcome'),el('text','Sign in or create an account to use the dashboard.'),el('button','Dashboard',{href:'/dashboard'})]}),
+      el('auth','Account'),
     ],css:'',html:'',js:''},
-    {id:id(),name:'Dashboard',path:'/dashboard',elements:[el('heading','Your dashboard'),el('text','Your records stay connected to your account. Sign in on the home page first.'),el('form','Create a task',{table:'tasks',endpoint:'create-task',children:[el('input','Task title',{name:'title',required:true}),el('input','Details',{name:'details'}),el('button','Save task',{submit:true})]}),el('table','Your tasks',{table:'tasks'})],css:'',html:'',js:''}],
+    {id:id(),name:'Dashboard',path:'/dashboard',elements:[el('heading','Dashboard'),el('text','Sign in to create and view your tasks.'),el('form','Create a task',{table:'tasks',endpoint:'create-task',children:[el('input','Task title',{name:'title',required:true}),el('input','Details',{name:'details'}),el('button','Save task',{submit:true})]}),el('table','Tasks',{table:'tasks'})],css:'',html:'',js:''}],
     tables:[{name:'tasks',columns:['title','details'],rows:[]}],users:[],flows:[{id:id(),name:'Create task',path:'create-task',method:'POST',nodes:[
       {id:'request',type:'request',x:50,y:100,next:'validate',config:{}},
       {id:'validate',type:'validate',x:290,y:100,next:'insert',config:{required:['title']}},
