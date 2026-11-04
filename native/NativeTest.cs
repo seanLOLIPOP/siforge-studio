@@ -36,10 +36,10 @@ public sealed partial class StudioWindow
         if(op=="state")return state?.DeepClone();
         if(op=="menu"){if(!nativeMenus.TryGetValue(id,out var menu))throw new Exception("Unavailable native menu.");menu.RaiseEvent(new RoutedEventArgs(MenuItem.ClickEvent));return null;}
         if(op=="pickers"){testImportPath=S(c,"import");testExportPath=S(c,"export");return null;}
-        if(op=="inspect"){var all=new List<object>();void Walk(DependencyObject root){for(int i=0;i<VisualTreeHelper.GetChildrenCount(root);i++){var child=VisualTreeHelper.GetChild(root,i);if(child is FrameworkElement el&&el.IsVisible)all.Add(new{type=el.GetType().Name,id=System.Windows.Automation.AutomationProperties.GetAutomationId(el),text=el is Button b?b.Content?.ToString():el is TextBlock t?t.Text:el is TextBox input?input.Text:""});Walk(child);}}Walk(this);if(modal!=null)Walk(modal);return all;}
+        if(op=="inspect"){var all=new List<object>();void Walk(DependencyObject root){for(int i=0;i<VisualTreeHelper.GetChildrenCount(root);i++){var child=VisualTreeHelper.GetChild(root,i);if(child is FrameworkElement el&&el.IsVisible)all.Add(new{type=el.GetType().Name,id=System.Windows.Automation.AutomationProperties.GetAutomationId(el),text=el is Button b?(System.Windows.Automation.AutomationProperties.GetName(b) is string name&&name.Length>0?name:b.Content?.ToString()):el is TextBlock t?t.Text:el is TextBox input?input.Text:""});Walk(child);}}Walk(this);if(modal!=null)Walk(modal);return all;}
         if(op=="clickText"){
             var root=S(c,"area")=="rail"?(DependencyObject)rail:this;
-            Button? Find(DependencyObject parent){for(int i=0;i<VisualTreeHelper.GetChildrenCount(parent);i++){var child=VisualTreeHelper.GetChild(parent,i);if(child is Button b&&b.IsVisible&&b.Content?.ToString()==S(c,"text"))return b;var nested=Find(child);if(nested!=null)return nested;}return null;}
+            Button? Find(DependencyObject parent){for(int i=0;i<VisualTreeHelper.GetChildrenCount(parent);i++){var child=VisualTreeHelper.GetChild(parent,i);if(child is Button b&&b.IsVisible&&(b.Content?.ToString()==S(c,"text")||System.Windows.Automation.AutomationProperties.GetName(b)==S(c,"text")))return b;var nested=Find(child);if(nested!=null)return nested;}return null;}
             var button=Find(root)??throw new Exception("Native button unavailable: "+S(c,"text"));button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));return null;
         }
         if(op=="capture"){

@@ -1,4 +1,4 @@
-# SI FORGE STUDIO — Native 2.0 Preview
+# SI FORGE STUDIO — Native 2.0.1 Preview
 
 A portable Windows website builder with WPF desktop controls, a WebView2 website canvas, connected backend flows, custom code, encrypted projects, accounts and a database.
 
@@ -11,6 +11,8 @@ Download the portable Windows ZIP from [Releases](https://github.com/seanLOLIPOP
 Open `release/SI FORGE STUDIO Native/SI FORGE STUDIO.exe`. Keep the entire folder together in a writable location. The native ZIP includes .NET, Node and a fixed WebView2 runtime. No installation, Node setup, .NET setup or runtime download is required. The build targets Windows x64; it is unsigned.
 
 Create a project with a password of at least 10 characters. Blank page is the default: no header, preset content, margins or padding. The full viewport is usable, and dropped components start in free position at the drop coordinates. New pages are also blank. Select Accounts and database when creating a project to use the original starter. That starter has a home page, signup/signin, a dashboard, a task form, a tasks table, and a working backend flow. Choose **Run website**, create an account, and save a task. The Database workspace displays project records and website accounts.
+
+The native desktop interface uses a dark workspace. Use **Inspector** in the top toolbar to hide or show properties and expand the canvas. This changes the editor chrome only; website colors follow your project.
 
 ## Workspaces
 

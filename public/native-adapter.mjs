@@ -14,7 +14,7 @@ export function installNative(host){
  const label=el=>[...el.childNodes].filter(c=>c.nodeType===3).map(c=>c.textContent).join(' ').trim();
  function describe(el){
   if(el.nodeType===3){const text=el.textContent.trim();return text?{kind:'text',text}:null;}
-  if(el.nodeType!==1||hidden(el))return null;
+  if(el.nodeType!==1||hidden(el)||el.classList.contains('small-label'))return null;
   const tag=el.tagName.toLowerCase(),id=key(el),text=(el.textContent||'').trim();
   const common={id,disabled:!!el.disabled||!!el.closest('[inert]'),active:el.classList.contains('active'),stable:el.id||el.getAttribute('data-prop')||el.getAttribute('data-nav-field')||el.getAttribute('data-shadow')||el.getAttribute('data-geometry')||id};
   if(tag==='input'||tag==='textarea'||tag==='select')return {...common,inputType:el.type,kind:tag==='select'?'select':el.type==='checkbox'?'check':el.type==='password'?'password':el.type==='file'?'file':el.type==='color'?'color':tag==='textarea'?'editor':'input',hint:el.value?.startsWith('data:image/')?'Embedded image. Enter a URL or upload a file to replace it.':'',value:el.type==='password'||el.value?.startsWith('data:image/')?'':el.value,checked:el.checked,min:el.min,max:el.max,options:tag==='select'?[...el.options].map(o=>({value:o.value,text:o.textContent})):null};
@@ -26,7 +26,7 @@ export function installNative(host){
   if(tag==='pre')return {...common,kind:'output',text};
   if(tag==='label')return {...common,kind:'label',text:label(el),children:[...el.children].map(describe).filter(Boolean)};
   if(el.classList.contains('page-item'))return {...common,kind:'row',text:label(el),children:[...el.children].map(describe).filter(Boolean)};
-  return {...common,kind:el.classList.contains('property-actions')||el.classList.contains('tabs')||el.classList.contains('code-tabs')||el.classList.contains('designer-tools')||el.classList.contains('section-toolbar')||el.classList.contains('title-controls')?'row':'group',drop:el.hasAttribute('data-nav-zone'),text:'',children:[...el.childNodes].map(describe).filter(Boolean)};
+  return {...common,kind:el.classList.contains('property-grid')?'grid':el.classList.contains('property-actions')||el.classList.contains('tabs')||el.classList.contains('code-tabs')||el.classList.contains('designer-tools')||el.classList.contains('section-toolbar')||el.classList.contains('title-controls')?'row':'group',drop:el.hasAttribute('data-nav-zone'),text:'',children:[...el.childNodes].map(describe).filter(Boolean)};
  }
  const region=selector=>{const el=document.querySelector(selector);return el?describe(el):null;};
  function push(){

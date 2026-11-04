@@ -1,14 +1,13 @@
-# SI FORGE STUDIO 2.0 Native Preview
+# SI FORGE STUDIO 2.0.1 Native Preview
 
-Compatibility-first migration to a native Windows interface.
+Dark desktop interface redesign.
 
-- C#/.NET 10 WPF controls for project management, forms, properties, code editing, dialogs and navigation.
-- Native draggable backend graph and virtualized database grid.
-- Existing Design, Navbar Studio, color-linked shadows, accounts, custom code and encrypted projects remain available.
-- Native project pickers, encrypted import/export, and self-contained native website exports.
-- Bundled .NET, Node and fixed WebView2 runtime for offline portability.
-- Shared JavaScript editing logic is retained during this migration; website rendering still uses browser code.
+- Charcoal workspace with violet accents, dark native title bar and consistent native control styling.
+- Icon navigation with an active workspace state and compact component tiles.
+- Paired position and appearance fields, a cleaner toolbar and a collapsible Inspector.
+- Dark project dialogs, database grid, menus and backend graph workspace.
+- Website canvas and exported website colors still follow the project itself.
 
-The first memory sample is higher than classic Electron 1.5. This build is a native preview, not a verified performance upgrade. It is installed alongside the classic app, preserving the original application and project files. Encrypted projects are copied into the preview; edits in the two folders are separate.
+All existing editing, backend, account, encryption and project transfer features are retained. The shared JavaScript editing engine and Node backend are still used. Performance tuning remains unfinished; this is a preview, not a verified memory or startup upgrade.
 
-Extract the full native ZIP and open SI FORGE STUDIO.exe. Keep all runtime files together. The Windows build is unsigned. Public website hosting is not included.
+Extract the full Windows ZIP and open SI FORGE STUDIO.exe. Keep the runtime files together. The build is unsigned. Public hosting is not included.
