@@ -8,7 +8,7 @@ Download the portable Windows ZIP from [Releases](https://github.com/seanLOLIPOP
 
 Open `release/SI FORGE STUDIO/SI FORGE STUDIO.exe`. Keep the entire folder together in a writable location. No installation, Node setup, or network access is required. The build targets Windows x64; it is unsigned.
 
-Create a project with a password of at least 10 characters. The starter has a home page, signup/signin, a dashboard, a task form, a tasks table, and a working backend flow. Choose **Run website**, create an account, and save a task. The Database workspace displays project records and website accounts.
+Create a project with a password of at least 10 characters. Blank page is the default: no header, preset content, margins or padding. The full viewport is usable, and dropped components start in free position at the drop coordinates. New pages are also blank. Select Accounts and database when creating a project to use the original starter. That starter has a home page, signup/signin, a dashboard, a task form, a tasks table, and a working backend flow. Choose **Run website**, create an account, and save a task. The Database workspace displays project records and website accounts.
 
 ## Workspaces
 
@@ -19,6 +19,8 @@ Create a project with a password of at least 10 characters. The starter has a ho
 - **Settings**: website name, global accent/background, password change, and quick guide.
 
 Designer shortcuts: arrow keys nudge free elements by 1 px (Shift: 10 px), or reorder layout elements. Ctrl+D duplicates; Delete removes; Ctrl+Z / Ctrl+Y undo and redo. Escape cancels a drag. Shift snaps rotation to 15 degrees or preserves resize proportions. Ctrl temporarily disables snapping. Each gesture is one undo step.
+
+The entire page is the canvas: free-position elements can reach the edges and header area. Click **Canvas** to change page background, content width, minimum height, padding, spacing and direction; mobile has separate layout overrides. Click the header to edit its title, colors, padding and visibility. Double-click headings, text or buttons to edit their text directly. Press Enter to finish or Escape to cancel.
 
 ## Encryption and portability
 
@@ -58,3 +60,7 @@ Development dependency installation needs internet. The packaged app bundles its
 To test a packaged build, set `SI_TEST_EXE` to its full executable path before running the desktop/export tests. Screenshots are written to `artifacts/`. Tests use temporary project directories.
 
 Projects from the older sibling SI FORGE Studio app are not automatically migrated. That app is preserved separately.
+
+## Local build delivery
+
+After building and checking a new version, run `npm run deliver:local`. It creates the versioned ZIP, extracts the application into `C:\Users\norml\OneDrive\Desktop\SI FORGE STUDIO`, and opens the app there. Existing projects and exports are preserved. Existing versioned subfolders are preserved. A running app in the destination receives a normal close request before the update; it is never force-killed.

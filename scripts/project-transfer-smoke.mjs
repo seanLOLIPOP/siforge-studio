@@ -27,7 +27,7 @@ async function launch(root){
  return {app,page,api};
 }
 async function create(page,name){
- await page.locator('#project-name').fill(name);
+ await page.locator('#project-template').selectOption('starter');await page.locator('#project-name').fill(name);
  await page.locator('#project-password').fill(password);
  await page.locator('#password-confirm').fill(password);
  await page.locator('#unlock-button').click();

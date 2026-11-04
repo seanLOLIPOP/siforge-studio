@@ -1,0 +1,31 @@
+import {_electron as electron} from './playwright.mjs';
+import {electronRuntime} from './runtime.mjs';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+const source=process.cwd(),directory=await fs.mkdtemp(path.join(os.tmpdir(),'si-blank-'));
+const env={...process.env,SI_NODE:process.execPath,SI_WORKSPACE_ROOT:directory};delete env.ELECTRON_RUN_AS_NODE;
+const app=await electron.launch({executablePath:process.env.SI_TEST_EXE||path.join(electronRuntime(),'electron.exe'),args:process.env.SI_TEST_EXE?[]:[source],env}),pid=app.process().pid;
+try{
+ const page=await app.firstWindow();page.setDefaultTimeout(10000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ assert.equal(await page.locator('#project-template').inputValue(),'blank');
+ await page.locator('#project-name').fill('Blank canvas');await page.locator('#project-password').fill('blank page password');await page.locator('#password-confirm').fill('blank page password');await page.locator('#unlock-button').click();await page.locator('#studio').waitFor({state:'visible'});
+ const frame=page.frameLocator('#canvas');await frame.locator('[data-sf-root]').waitFor();assert.equal(await frame.locator('[data-element]').count(),0);assert.equal(await frame.locator('[data-sf-nav]').isVisible(),false);
+ const measure=()=>frame.locator('[data-sf-content]').evaluate(el=>({padding:getComputedStyle(el).padding,width:el.getBoundingClientRect().width,viewport:innerWidth,height:document.querySelector('[data-sf-root]').getBoundingClientRect().height,viewportHeight:innerHeight}));
+ let m=await measure();assert.equal(m.padding,'0px');assert.equal(m.width,m.viewport);assert.ok(m.height>=m.viewportHeight);
+ const palette=await page.locator('[data-add="text"]').boundingBox(),canvas=await page.locator('#canvas').boundingBox();
+ await page.mouse.move(palette.x+30,palette.y+30);await page.mouse.down();await page.mouse.move(palette.x+45,palette.y+30,{steps:3});await page.mouse.move(canvas.x+5,canvas.y+5,{steps:12});await page.mouse.up();
+ await frame.locator('[data-element]').waitFor();assert.equal(await page.locator('#layout-mode').inputValue(),'free');
+ let rect=await frame.locator('[data-element]').boundingBox();assert.ok(Math.abs(rect.x-canvas.x-5)<2);assert.ok(Math.abs(rect.y-canvas.y-5)<2);
+ await page.locator('[data-geometry="x"]').fill('0');await page.locator('[data-geometry="x"]').press('Tab');await frame.locator('[data-element]').waitFor();await page.locator('[data-geometry="y"]').fill('0');await page.locator('[data-geometry="y"]').press('Tab');await frame.locator('[data-element]').waitFor();
+ await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='All changes saved');await frame.locator('[data-element]').evaluate(()=>window.scrollTo(0,0));
+ rect=await frame.locator('[data-element]').boundingBox();assert.ok(Math.abs(rect.x-canvas.x)<2);assert.ok(Math.abs(rect.y-canvas.y)<2);
+ await page.locator('#mobile').click();await page.waitForFunction(()=>document.querySelector('#canvas').getBoundingClientRect().width<=391);m=await measure();assert.equal(m.padding,'0px');assert.equal(m.width,m.viewport);
+ await page.locator('#add-page').click();await page.locator('#modal-body [name="name"]').fill('Empty');await page.locator('#modal-body [name="path"]').fill('/empty');await page.locator('#modal-confirm').click();await page.locator('#canvas-path').getByText('/empty',{exact:true}).waitFor();await frame.locator('[data-sf-root]').waitFor();assert.equal(await frame.locator('[data-element]').count(),0);assert.equal(await frame.locator('[data-sf-nav]').isVisible(),false);m=await measure();assert.equal(m.padding,'0px');assert.equal(m.width,m.viewport);
+ await page.locator('#desktop').click();await page.locator('#save').click();await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='All changes saved');await page.screenshot({path:path.join(source,'artifacts','blank-canvas-v1.png')});assert.deepEqual(errors,[]);
+ await page.locator('#lock').click();await page.locator('#project-password').fill('blank page password');await page.locator('#unlock-button').click();await page.locator('#studio').waitFor({state:'visible'});await frame.locator('[data-element]').waitFor();assert.equal(await frame.locator('[data-sf-nav]').isVisible(),false);
+ console.log('Blank canvas passed: blank default project, no header/content, zero padding, full viewport, exact palette drop, origin placement, mobile, blank added page and encrypted reopen.');
+ await Promise.all([app.waitForEvent('close'),app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].close())]);
+}finally{spawnSync('taskkill',['/pid',String(pid),'/t','/f']);await fs.rm(directory,{recursive:true,force:true,maxRetries:10,retryDelay:200});}

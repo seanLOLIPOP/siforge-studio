@@ -15,7 +15,9 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 - Studio and website screenshots were rendered and visually inspected.
 - Project transfer desktop integration: native save/open picker handlers, encrypted file export, canceled dialogs, wrong password while keeping another project open, import into a second workspace, imported account login and owned records, editable frontend code, start-screen import, and duplicate-copy safety. The native picker results are stubbed in automation; the actual desktop IPC and disk writes are exercised.
 
-- Designer integration: flow reorder, free dragging, guide cancellation, grid snapping, resize, rotation and rotated resize, duplicate, stacking, undo/redo, keyboard nudging, Alt reparenting, automatic mobile stacking, mobile override/reset, running website geometry parity, and encrypted reopen.
+- Designer integration: flow reorder, free dragging, guide cancellation, grid snapping, resize, rotation and rotated resize, duplicate, stacking, undo/redo, keyboard nudging, Alt reparenting, automatic mobile stacking, mobile override/reset, running website geometry parity, whole-page origin placement, canvas/header editing, inline text editing, and encrypted reopen.
+
+- Blank canvas integration: default blank project, no header or preset elements, full-width viewport and minimum viewport height, zero desktop/mobile padding, palette drop coordinates, free position at page origin, blank added pages, and encrypted reopen.
 
 ## Portable delivery
 
