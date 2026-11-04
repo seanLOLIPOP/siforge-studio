@@ -1,0 +1,22 @@
+(()=>{
+ const navs=[...document.querySelectorAll('.sf-navbar')];if(!navs.length)return;
+ const preview=document.body.hasAttribute('data-nav-preview');
+ const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const api=async(action,data)=>{const r=await fetch('/api/'+action,{method:data?'POST':'GET',headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined});const result=await r.json();if(!r.ok)throw Error(result.error||'Request failed');return result;};
+ function close(details,focus=false){details.open=false;if(focus)details.querySelector('summary')?.focus();}
+ document.addEventListener('click',event=>{for(const d of document.querySelectorAll('.sf-navbar details[open]'))if(!d.contains(event.target))close(d);if(event.target.closest('.sf-nav-close'))close(event.target.closest('.sf-nav-toggle'),true);if(event.target.closest('.sf-mobile-menu a')){const toggle=event.target.closest('.sf-nav-toggle');if(toggle)close(toggle);}});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape')for(const d of [...document.querySelectorAll('.sf-navbar details[open]')].reverse())close(d,true);});
+ document.addEventListener('toggle',event=>{const d=event.target;if(d.matches?.('.sf-submenu[open]'))for(const other of document.querySelectorAll('.sf-submenu[open]'))if(other!==d&&!other.contains(d))close(other);},true);
+ let dialog;
+ function login(){
+  if(!dialog){dialog=document.createElement('dialog');dialog.className='sf-nav-auth';dialog.setAttribute('aria-label','Sign in or create account');dialog.innerHTML='<button class="sf-nav-auth-close" type="button" aria-label="Close sign in">✕</button><h2>Welcome</h2><form><label>Email<input name="email" type="email" autocomplete="email" required></label><label>Password<input name="password" type="password" minlength="10" autocomplete="current-password" required></label><div class="sf-auth-actions"><button type="submit">Sign in</button><button type="button" data-nav-signup>Create account</button></div><output role="status"></output></form>';document.body.append(dialog);dialog.querySelector('.sf-nav-auth-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
+   const form=dialog.querySelector('form'),output=dialog.querySelector('output');let busy=false;
+   const send=async mode=>{if(!form.reportValidity()||busy)return;busy=true;form.querySelectorAll('button').forEach(b=>b.disabled=true);try{output.textContent='Working…';await api(mode,Object.fromEntries(new FormData(form)));location.reload();}catch(e){output.textContent=e.message;}finally{busy=false;form.querySelectorAll('button').forEach(b=>b.disabled=false);}};
+   form.onsubmit=e=>{e.preventDefault();send('login');};form.querySelector('[data-nav-signup]').onclick=()=>send('signup');
+   if(preview){output.textContent='Run the website to sign in or create an account.';form.querySelectorAll('button,input').forEach(el=>el.disabled=true);}
+  }
+  document.querySelectorAll('.sf-nav-toggle[open]').forEach(d=>close(d));dialog.showModal();
+ }
+ document.querySelectorAll('[data-nav-signin]').forEach(button=>button.onclick=login);
+ if(!preview)api('me').then(({user})=>{if(!user)return;document.querySelectorAll('.sf-nav-account').forEach(host=>{host.innerHTML='<details class="sf-submenu"><summary>'+escape(user.email)+' ⌄</summary><div class="sf-nav-panel"><button type="button" data-nav-logout>Sign out</button><output role="status"></output></div></details>';host.querySelector('[data-nav-logout]').onclick=async()=>{try{await api('logout',{});location.reload();}catch(e){host.querySelector('output').textContent=e.message;}};});}).catch(e=>console.error('Navbar account:',e.message));
+})();

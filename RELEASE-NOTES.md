@@ -1,13 +1,17 @@
-# SI FORGE STUDIO 1.3.1
+# SI FORGE STUDIO 1.4.0
 
-Start with a completely blank page and use the whole viewport.
+Build reusable responsive navigation in the new Navbar Studio workspace.
 
-- Blank page is the default new-project template, with no header, preset content or padding.
-- New pages are empty and fill the viewport on desktop and mobile.
-- Components dropped onto a blank page start in free position at the drop coordinates.
-- The Accounts and database starter remains available in the new-project selector.
-- Local delivery extracts and opens new builds at C:\Users\norml\OneDrive\Desktop\SI FORGE STUDIO while preserving saved projects.
+- Five variations: logo left, centered logo, split navigation, floating bar and sidebar.
+- Drag links between left, center and right sections; reorder or choose sections in Properties.
+- Links, buttons, icon links, dropdowns, and large panels with four columns, headings, descriptions and images.
+- Desktop, tablet and mobile previews with adjustable breakpoints and per-item device visibility.
+- Independent tablet/mobile collapse controls and drawer, dropdown or fullscreen menus.
+- Logo upload, light/dark styles, editable colors, height, spacing, corners, borders, shadows, transparency and sticky positioning.
+- Working sign-in/create-account dialog and signed-in account menu with Sign out. Authentication remains on the current page.
+- Save multiple navbars, duplicate variations, and assign them to selected pages or all pages.
+- Navbars and embedded assets persist in encrypted projects, project transfers and standalone website exports.
 
-Create a project with Blank page selected, or use the + beside Pages in an existing project. Drag components anywhere on the page. Use Layout mode when you want automatic stacking.
+Open Navbar, choose New navbar, pick a variation and edit its items. Apply it to your pages, then use Run website to test account controls. The preview supports menu interactions; actual credentials are used only in the running website.
 
-Extract the full portable folder and open SI FORGE STUDIO.exe. Existing encrypted projects remain compatible. The Windows build is unsigned. Websites run locally.
+The build is extracted and opened locally at C:\Users\norml\OneDrive\Desktop\SI FORGE STUDIO. Existing encrypted projects remain compatible. Windows builds are unsigned; websites run locally.

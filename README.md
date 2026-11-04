@@ -13,6 +13,7 @@ Create a project with a password of at least 10 characters. Blank page is the de
 ## Workspaces
 
 - **Design**: click or drag components to add them; select on the canvas or in Layers. Edit text, style, fields, table bindings, and form endpoints. Drag layers to reorder or nest. Desktop/mobile preview, mobile style overrides (600 px breakpoint), saved reusable blocks, duplicate, delete, undo/redo, and page settings are included. Drag elements to reorder in Layout mode, or choose Free position for overlap and exact X/Y placement. Selection handles resize and rotate. Properties provides exact values and Bring forward / Send backward. Guides and adjustable Grid have separate toggles. Hold Alt while dragging to move into another container. Desktop positions stack on mobile; Mobile accepts separate overrides and a reset control.
+- **Navbar Studio**: create reusable navbars with logo-left, centered-logo, split, floating and sidebar presets. Drag items between left/center/right sections or use the section selector and move buttons. Add links, buttons, icon links, dropdowns and large panels with columns, headings, descriptions and embedded images. Adjust colors, height, padding, gaps, corners, shadows, borders, transparency and sticky positioning. Set tablet/mobile breakpoints, device visibility, collapse behavior, and drawer/dropdown/full-screen menus. Assign one saved navbar to selected pages or all pages. Duplicate presets to make variations. Sign-in opens a working account dialog; signed-in users get an email menu and Sign out. Authentication stays on the current page. Existing project import/export includes saved navbars.
 - **Backend**: add endpoints and request/validate/condition/insert/list/code/response nodes. Drag nodes. Click an output dot then a destination node to connect. Set false branches in node settings. Configuration is JSON. A request must reach a response; execution is capped at 100 steps. Tests use the `studio` record owner. Node input/output tracing is limited to identifiers, timings, and errors.
 - **Database**: create tables with custom text columns, insert records, delete records, and inspect users. IDs, owners, and timestamps are automatic. Website access requires a signed-in account and is scoped by record owner. Schema alteration, arbitrary SQL, relationships, and pagination beyond the first 1000 displayed rows are not included.
 - **Code**: per-page HTML, CSS, and JavaScript; custom synchronous JavaScript in backend Code nodes. Return an updated `input` from backend code. Custom HTML is not converted back into visual elements. Backend code has a 300 ms VM timeout and no provided `require` or network API. It is trusted project code, not an OS security sandbox. Async backend code and external packages are not supported.
@@ -51,6 +52,7 @@ npm start
 npm run build
 npm run test:desktop
 npm run test:designer
+npm run test:navbar
 npm run test:export
 npm run test:project-transfer
 ```
@@ -64,3 +66,9 @@ Projects from the older sibling SI FORGE Studio app are not automatically migrat
 ## Local build delivery
 
 After building and checking a new version, run `npm run deliver:local`. It creates the versioned ZIP, extracts the application into `C:\Users\norml\OneDrive\Desktop\SI FORGE STUDIO`, and opens the app there. Existing projects and exports are preserved. Existing versioned subfolders are preserved. A running app in the destination receives a normal close request before the update; it is never force-killed.
+
+## Navbar Studio
+
+Open Navbar in the left rail, choose New navbar and pick a variation. Click an item to edit its label, destination, section and device visibility; use + beside Items to add more. Choose Dropdown or Large panel to add panel links. Choose Navbar in Properties to edit the brand and overall appearance. Tablet and Mobile preview the configured breakpoints at actual device widths; the desktop preview scrolls horizontally in a narrow workspace. Click Use on pages checkboxes or Apply to all pages. Page checkboxes take effect immediately and are saved automatically. Use Run website to test real account sign-in; the editor preview shows the account dialog without sending credentials.
+
+Navbar presets are stored in the encrypted project. Per-page header settings remain available on pages without an assigned navbar. A navbar has its own responsive breakpoints, independent of the page designer's 600 px breakpoint. Menus open by click or keyboard; Escape closes them. Dropdowns support one panel level, with up to four columns in a large panel. Sidebar width is 260 px. CSS may be extended in Code; it does not become visual navbar controls.

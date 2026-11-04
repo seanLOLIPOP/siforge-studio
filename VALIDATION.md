@@ -4,7 +4,7 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 
 ## Passed
 
-- Eleven automated tests, including snapping, rotated resizing, layout commands, mobile overrides, stacking and runtime layout rendering, plus core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
+- Fifteen automated tests, including snapping, rotated resizing, layout commands, mobile overrides, stacking and runtime layout rendering, navbar presets, validation, escaping and responsive rules, plus core tests: authenticated encryption and tamper detection; invalid schema/path rejection; graph validation, code timeout, and cycle limits; complete HTTP/project/account/database lifecycle; encrypted project transfer preserving code/assets/accounts/records with invalid-file and collision checks; website-only transfer restrictions.
 - AES-256-GCM envelope contains no plaintext project name, backend code marker, or record marker. Wrong passwords and modified ciphertext fail to decrypt.
 - Account signup and login use salted password hashes. Account A cannot read Account B's records. Project editor responses omit hashes and table rows from the page model.
 - Insert followed by a failed backend node rolls back. Records and account hashes survive lock/unlock. Password rotation rejects the old password.
@@ -18,6 +18,8 @@ Validated on this Windows machine on November 4, 2026. This is a working unsigne
 - Designer integration: flow reorder, free dragging, guide cancellation, grid snapping, resize, rotation and rotated resize, duplicate, stacking, undo/redo, keyboard nudging, Alt reparenting, automatic mobile stacking, mobile override/reset, running website geometry parity, whole-page origin placement, canvas/header editing, inline text editing, and encrypted reopen.
 
 - Blank canvas integration: default blank project, no header or preset elements, full-width viewport and minimum viewport height, zero desktop/mobile padding, palette drop coordinates, free position at page origin, blank added pages, and encrypted reopen.
+
+- Navbar integration: five variations, embedded logo, light/dark styling, breakpoint edits, drag between sections, large panel links, device visibility, tablet drawer and mobile fullscreen menu, page reuse, real signup/login/logout on a blank page, duplicate/delete, encrypted reopen, moved standalone website export with existing account login and shared navbar navigation.
 
 ## Portable delivery
 

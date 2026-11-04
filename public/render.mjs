@@ -1,3 +1,4 @@
+import {renderNavbar,navbarCSS} from './navbar.mjs';
 import {layoutFor,layoutStyle,freeExtent} from './layout.mjs';
 export const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function renderElement(e,edit=false){
@@ -27,6 +28,7 @@ export function canvasStyles(page,mobile=false){
 }
 export function renderPage(project,page,edit=false){
  const mobileRules=[];const visit=els=>{for(const e of els){const styles={...layoutStyle(e,true),...e.mobileStyle};if(['container','form'].includes(e.type)&&(freeExtent(e.children||[])||freeExtent(e.children||[],true)))styles.minHeight=freeExtent(e.children||[],true)+'px';if(Object.keys(styles).length)mobileRules.push(`[data-element="${e.id.replace(/[^a-zA-Z0-9_-]/g,'')}"]{${Object.entries(styles).map(([k,v])=>k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase())+':'+v+' !important').join(';')}}`);visit(e.children||[]);}};visit(page.elements);
+ const customNavbar=project.navbars?.find(n=>n.id===page.navbarId);
  const canvas=canvasStyles(page),mobileCanvas=canvasStyles(page,true),navigation=page.navigation||{};
  const rootStyle={position:'relative',minHeight:'max(100vh, '+freeExtent(page.elements)+'px)',background:page.background||project.theme.background};
  const navStyle={background:'#ffffff',color:project.theme.text,padding:'22px 6%',gap:'24px',...navigation.style,display:navigation.hidden?'none':'flex'};
@@ -38,5 +40,6 @@ export function renderPage(project,page,edit=false){
  @media(max-width:600px){main{padding:24px 16px}nav{gap:14px;padding:18px}h1{letter-spacing:-.7px}table{display:block;overflow:auto}.actions{flex-wrap:wrap}}
  [data-sf-root]{isolation:isolate}[data-sf-content]{position:static}[data-sf-nav] a{color:inherit}[data-element]{overflow-wrap:anywhere}
  @media(max-width:600px){[data-kind="container"],[data-kind="form"]{flex-direction:column!important;grid-template-columns:minmax(0,1fr)!important}[data-sf-root]{min-height:max(100vh, ${freeExtent(page.elements,true)}px)!important}[data-sf-content]{${cssText(mobileCanvas).split(';').join('!important;')}!important}${mobileRules.join('')}}
- ${page.css||''}</style></head><body><div data-sf-root style="${esc(cssText(rootStyle))}"><nav data-sf-nav style="${esc(cssText(navStyle))}"><strong data-sf-brand>${esc(navigation.title??project.name)}</strong>${nav}</nav><main data-sf-content style="${esc(cssText(canvas))}">${page.elements.map(e=>renderElement(e,edit)).join('')}${edit?'':page.html||''}</main></div>${edit?`<script>${selectScript}</script>`:`<script src="/site.js"></script><script>${(page.js||'').replace(/<\/script/gi,'<\\/script')}</script>`}</body></html>`;
+ ${customNavbar?navbarCSS(customNavbar):''}
+ ${page.css||''}</style></head><body><div data-sf-root style="${esc(cssText(rootStyle))}">${customNavbar?renderNavbar(customNavbar):`<nav data-sf-nav style="${esc(cssText(navStyle))}"><strong data-sf-brand>${esc(navigation.title??project.name)}</strong>${nav}</nav>`}<main data-sf-content style="${esc(cssText(canvas))}">${page.elements.map(e=>renderElement(e,edit)).join('')}${edit?'':page.html||''}</main></div>${edit?`<script>${selectScript}</script>`:`<script src="/site.js"></script>${customNavbar?'<script src="/navbar-runtime.js"></script>':''}<script>${(page.js||'').replace(/<\/script/gi,'<\\/script')}</script>`}</body></html>`;
 }

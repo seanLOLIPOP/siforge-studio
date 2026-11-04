@@ -1,3 +1,4 @@
+import {validateNavbars} from '../public/navbar.mjs';
 import {randomUUID} from 'node:crypto';
 export const id=()=>randomUUID();
 export function blankPage(name='Home',path='/'){
@@ -33,5 +34,5 @@ export function validateProject(p){
   const paths=new Set();for(const page of p.pages){if(!/^\/(?:[a-zA-Z0-9_-]+\/?)*$/.test(page.path)||paths.has(page.path))throw Error('Page paths must be unique URL paths.');paths.add(page.path);if(!Array.isArray(page.elements))throw Error('Invalid page elements.');}
   const names=new Set();for(const t of p.tables){if(!/^[a-z][a-z0-9_]{0,39}$/.test(t.name)||names.has(t.name)||!Array.isArray(t.columns)||!t.columns.length||t.columns.length>30||new Set(t.columns).size!==t.columns.length||t.columns.some(c=>!/^[a-z][a-z0-9_]{0,39}$/.test(c)||['id','owner','created_at'].includes(c)))throw Error('Tables need unique names and valid columns (id, owner, created_at are reserved).');names.add(t.name);if(!Array.isArray(t.rows))throw Error('Invalid table rows.');}
   const routes=new Set();for(const f of p.flows){if(!/^[a-z][a-z0-9-]{0,60}$/.test(f.path)||routes.has(f.path))throw Error('Flow paths must be unique lowercase slugs.');routes.add(f.path);if(!['GET','POST'].includes(f.method)||!Array.isArray(f.nodes)||f.nodes.length>100)throw Error('Invalid flow.');const ids=f.nodes.map(n=>n.id);if(new Set(ids).size!==ids.length)throw Error('Duplicate node IDs.');for(const n of f.nodes){if(!['request','validate','condition','insert','list','code','response'].includes(n.type))throw Error('Unknown node type.');for(const link of [n.next,n.otherwise])if(link&&!ids.includes(link))throw Error('Node connection points to a missing node.');}}
-  return p;
+  validateNavbars(p);return p;
 }
